@@ -4,7 +4,7 @@
 import .basic
 
 namespace universal
-variables {τ : Type} {σ : Type} (sig : signature τ σ)
+variables {τ : Type} {σ : Type*} (sig : signature τ σ)
 
 abbreviation substitution (dom₁ dom₂ : list τ) := Π (i : index dom₁), term sig dom₂ i.val
 

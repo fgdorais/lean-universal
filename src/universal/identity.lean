@@ -6,7 +6,7 @@ import .substitution
 import .homomorphism
 
 namespace universal
-variables {τ : Type} {σ : Type} (sig : signature τ σ)
+variables {τ : Type} {σ : Type*} (sig : signature τ σ)
 
 structure identity :=
 (cod : τ)

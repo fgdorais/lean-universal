@@ -6,7 +6,7 @@ import .homomorphism
 import .identity
 
 namespace universal
-variables {τ : Type} {σ : Type} {sig : signature τ σ} (alg : algebra sig)
+variables {τ : Type} {σ : Type*} {sig : signature τ σ} (alg : algebra sig)
 
 structure congruence :=
 (r (t) : alg.sort t → alg.sort t → Prop)

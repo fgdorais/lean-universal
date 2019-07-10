@@ -5,7 +5,7 @@ import .basic
 import .substitution
 
 namespace universal
-variables {τ : Type} {σ : Type} {sig : signature τ σ}
+variables {τ : Type} {σ : Type*} {sig : signature τ σ}
 
 structure homomorphism (alg₁ : algebra sig) (alg₂ : algebra sig) :=
 (map {} (t) : alg₁.sort t → alg₂.sort t)

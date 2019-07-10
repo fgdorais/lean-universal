@@ -6,10 +6,11 @@ import .identity
 import .congruence
 
 namespace universal
-variables {τ : Type} {σ : Type} {sig : signature τ σ}
+universe u
+variables {τ : Type} {σ : Type u} {sig : signature τ σ}
 
 definition valid {ι : Type} (ax : ι → identity sig) {dom : list τ} {{cod}} : term sig dom cod → term sig dom cod → Prop :=
-λ t₁ t₂, ∀ (alg : algebra.{0} sig), (∀ i, alg.satisfies (ax i)) → (∀ (val : Π (i : index dom), alg.sort i.val), alg.eval t₁ val = alg.eval t₂ val)
+λ t₁ t₂, ∀ (alg : algebra.{u u} sig), (∀ i, alg.satisfies (ax i)) → (∀ (val : Π (i : index dom), alg.sort i.val), alg.eval t₁ val = alg.eval t₂ val)
 
 namespace valid
 variables {ι : Type} {ax : ι → identity sig} {dom : list τ}

@@ -7,9 +7,10 @@ import .congruence
 import .model
 
 namespace universal
-variables {τ : Type} {σ : Type} {sig : signature τ σ} {ι : Type} (ax : ι → identity sig)
+universe u
+variables {τ : Type} {σ : Type u} {sig : signature τ σ} {ι : Type} (ax : ι → identity sig)
 
-inductive proof {ι : Type} (ax : ι → identity sig) {dom : list τ} : Π {cod : τ}, term sig dom cod → term sig dom cod → Type
+inductive proof {ι : Type} (ax : ι → identity sig) {dom : list τ} : Π {cod : τ}, term sig dom cod → term sig dom cod → Type u
 | ax (i : ι) (sub : substitution sig (ax i).dom dom) : proof (sub.apply (ax i).lhs) (sub.apply (ax i).rhs)
 | proj {} (i : index dom) : proof (term.proj i) (term.proj i)
 | func (f : σ) {lhs rhs : Π (i : sig.index f), term sig dom i.val} : (Π i, proof (lhs i) (rhs i)) → proof (term.func f lhs) (term.func f rhs)

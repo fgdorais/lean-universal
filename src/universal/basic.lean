@@ -23,9 +23,10 @@ definition func (sort : τ → Type*) := (Π (i : a.index), sort i.val) → sort
 
 end arity
 
-definition signature (τ : Type) (σ : Type) := σ → arity τ
+definition signature (τ : Type) (σ : Type*) := σ → arity τ
 
-variables {τ : Type} {σ : Type} (sig : signature τ σ)
+universe u
+variables {τ : Type} {σ : Type u} (sig : signature τ σ)
 
 abbreviation signature.cod (f : σ) : τ := arity.cod (sig f)
 
@@ -33,7 +34,7 @@ abbreviation signature.dom (f : σ) : list τ := arity.dom (sig f)
 
 abbreviation signature.index (f : σ) := arity.index (sig f)
 
-inductive term (dom : list τ) : τ → Type
+inductive term (dom : list τ) : τ → Type u
 | proj {} (i : index dom) : term i.val
 | func (f : σ) : (Π (i : sig.index f), term i.val) → term (sig.cod f)
 
