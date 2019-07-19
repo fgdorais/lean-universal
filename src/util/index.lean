@@ -23,6 +23,9 @@ definition val : Π {xs : list α}, index xs → α
 
 definition nil_elim {C : Sort*} : Π (i : index (@list.nil α)), C .
 
+@[simp] theorem val_eq_rec : Π {xs ys : list α} (h : xs = ys) (i : index xs), val (eq.rec_on h i : index ys) = i.val
+| _ _ rfl _ := rfl
+
 section map
 variables {β : Type*} (f : α → β)
 
@@ -51,6 +54,38 @@ definition unmap : Π {xs : list α}, index (xs.map f) → index xs
 | _ (index.tail _ _ i) := congr_arg (index.tail _ _) (unmap_map i)
 
 end map
+
+section append
+
+definition append_left : Π (xs ys : list α), index xs → index (xs ++ ys)
+| (x::xs) ys (index.head _ _) := index.head x (xs ++ ys)
+| (x::xs) ys (index.tail _ _ i) := index.tail x (xs ++ ys) (append_left xs ys i)
+
+@[simp] theorem append_left_val : ∀ (xs ys : list α) (i : index xs), (append_left xs ys i).val = i.val
+| (x::xs) ys (index.head _ _) := rfl
+| (x::xs) ys (index.tail _ _ i) := append_left_val xs ys i
+
+definition append_right : Π (xs ys : list α), index ys → index (xs ++ ys)
+| [] ys i := i
+| (x::xs) ys i := index.tail x (xs ++ ys) (append_right xs ys i)
+
+@[simp] theorem append_right_val : ∀ (xs ys : list α) (i : index ys), (append_right xs ys i).val = i.val
+| [] ys _ := rfl
+| (x::xs) ys i := append_right_val xs ys i
+
+end append
+
+section join
+
+definition join_map : Π (xss : list (list α)) (i : index xss), index i.val → index xss.join
+| (xs::xss) (index.head _ _) j := append_left xs xss.join j
+| (xs::xss) (index.tail _ _ i) j := append_right xs xss.join $ join_map xss i j
+
+@[simp] theorem join_map_val : ∀ (xss : list (list α)) (i : index xss) (j : index i.val), (join_map xss i j).val = j.val
+| (xs::xss) (index.head _ _) j := append_left_val xs xss.join j
+| (xs::xss) (index.tail _ _ i) j := eq.trans (append_right_val xs xss.join (join_map xss i j)) (join_map_val xss i j)
+
+end join
 
 definition iota : Π (xs : list α), list (index xs)
 | [] := []
@@ -138,8 +173,14 @@ by rw [val_map, iota_index_val]
 
 end enum
 
-definition to_list {xs : list α} {β : Type*} (t : index xs → β) : list β :=
+abbreviation to_list {xs : list α} {β : Type*} (t : index xs → β) : list β :=
 list.map (λ (z : sigma (λ _, β)), sigma.snd z) (enum t)
+
+abbreviation to_list_index {xs : list α} {β : Type*} (t : index xs → β) : index xs → index (to_list t) :=
+λ i, index.map (λ (z : sigma (λ _, β)), sigma.snd z) (enum_index t i)
+
+@[simp] theorem to_list_index_val {xs : list α} {β : Type*} (t : index xs → β) (i : index xs) : (to_list_index t i).val = t i :=
+by rw [val_map, enum_index_val]
 
 section fold
 
@@ -429,3 +470,12 @@ theorem index_induction_on {P : (Π i, quotient (s i)) → Prop} (q : Π i, quot
 (∀ (t : Π i, β i), P (λ i, ⟦t i⟧)) → P q := λ H, index_ind H q
 
 end quotient
+
+namespace list
+variable {α : Type*}
+
+theorem mem_join (x : α) : Π {xss : list (list α)} (i : index xss), x ∈ i.val → x ∈ xss.join
+| _ (index.head xs xss) hi := show x ∈ xs ++ xss.join, by { rw mem_append, left, exact hi }
+| _ (index.tail xs xss i) hi := show x ∈ xs ++ xss.join, by { rw mem_append, right, exact mem_join i hi }
+
+end list

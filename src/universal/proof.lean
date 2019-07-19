@@ -42,6 +42,11 @@ definition subst {dom₁ dom₂ : list τ} (sub : substitution sig dom₁ dom₂
 | _ _ _ (proof.func f hs) := proof.func f (λ i, subst (hs i))
 | _ _ _ (proof.eucl h₁ h₂) := proof.eucl (subst h₁) (subst h₂)
 
+definition ax_id (i) : proof ax (ax i).lhs (ax i).rhs :=
+eq.rec_on (substitution.id_apply (ax i).lhs) $ 
+eq.rec_on (substitution.id_apply (ax i).rhs) $ 
+proof.ax i substitution.id
+
 variables (sig dom ax)
 
 definition to_congruence : congruence (term_algebra sig dom) :=

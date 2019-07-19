@@ -17,9 +17,9 @@ protected theorem eq : ∀ {a b : arity τ}, a.cod = b.cod → a.dom = b.dom →
 theorem eq_iff : a.cod = b.cod ∧ a.dom = b.dom ↔ a = b :=
 ⟨λ ⟨hc, hd⟩, arity.eq hc hd, λ h, eq.subst h ⟨rfl, rfl⟩⟩
 
-definition index := index a.dom
+abbreviation index := index a.dom
 
-definition func (sort : τ → Type*) := (Π (i : a.index), sort i.val) → sort a.cod
+abbreviation func (sort : τ → Type*) := (Π (i : a.index), sort i.val) → sort a.cod
 
 end arity
 

@@ -36,7 +36,7 @@ alg.eval (sub.apply t) val = alg.eval t (λ i, alg.eval (sub i) val)
 
 abbreviation id {dom : list τ} : substitution sig dom dom := term.proj
 
-theorem id_apply {dom : list τ} : ∀ {cod} (t : term sig dom cod), substitution.id.apply t = t
+@[simp] theorem id_apply {dom : list τ} : ∀ {cod} (t : term sig dom cod), substitution.id.apply t = t
 | _ (term.proj _) := rfl
 | _ (term.func f ts) := 
   have (λ i, apply id (ts i)) = ts,
@@ -48,7 +48,7 @@ theorem id_apply {dom : list τ} : ∀ {cod} (t : term sig dom cod), substitutio
 abbreviation comp : substitution sig dom₂ dom₃ → substitution sig dom₁ dom₂ → substitution sig dom₁ dom₃ :=
 λ sub₂₃ sub₁₂ i, sub₂₃.apply (sub₁₂ i)
 
-theorem comp_apply (sub₂₃ : substitution sig dom₂ dom₃) (sub₁₂ : substitution sig dom₁ dom₂) :
+@[simp] theorem comp_apply (sub₂₃ : substitution sig dom₂ dom₃) (sub₁₂ : substitution sig dom₁ dom₂) :
 ∀ {cod} (t : term sig dom₁ cod), (comp sub₂₃ sub₁₂).apply t = sub₂₃.apply (sub₁₂.apply t)
 | _ (term.proj _) := rfl
 | _ (term.func f ts) :=
@@ -74,6 +74,13 @@ theorem equation.subst_lhs {cod} (e : equation sig dom₁ cod) : (e.subst sub).l
 
 theorem equation.subst_rhs {cod} (e : equation sig dom₁ cod) : (e.subst sub).rhs = e.rhs.subst sub := rfl
 
+theorem subst_subst {dom₁ dom₂ dom₃ : list τ} (sub₂₃ : substitution sig dom₂ dom₃) (sub₁₂ : substitution sig dom₁ dom₂) {cod} (t : term sig dom₁ cod) :
+t.subst (λ i, (sub₁₂ i).subst sub₂₃) = (t.subst sub₁₂).subst sub₂₃ := substitution.comp_apply sub₂₃ sub₁₂ t
+
+@[simp] theorem subst_proj {dom} {cod} (t : term sig dom cod) : t.subst term.proj = t := substitution.id_apply t
+
 end subst
+
+
 
 end universal
