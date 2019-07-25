@@ -59,6 +59,21 @@ protected abbreviation op_left_cancellative (op : α → β → γ) : Prop := �
 protected abbreviation op_right_cancellative (op : α → β → γ) : Prop := ∀ {{x y z}}, op x y = op z y → x = z
 
 @[identity]
+protected abbreviation op_idempotent (op : α → α → α) : Prop := ∀ x, op x x = x
+
+@[identity]
+protected abbreviation op_left_absorptive (op₁ : α → β → β) (op₂ : γ → β → α) : Prop := ∀ x y, op₁ (op₂ x y) y = y
+
+@[identity]
+protected abbreviation op_right_absorptive (op₁ : α → β → α) (op₂ : α → γ → β) : Prop := ∀ x y, op₁ x (op₂ x y) = x
+
+@[identity]
+protected abbreviation op_op_left_cancellative (op₁ : α → β → γ) (op₂ : α → β → δ) : Prop := ∀ {{x y z}}, op₁ x y = op₁ x z → op₂ x y = op₂ x z → y = z
+
+@[identity]
+protected abbreviation op_op_right_cancellative (op₁ : α → β → γ) (op₂ : α → β → δ) : Prop := ∀ (x y z), op₁ x y = op₁ z y → op₂ x y = op₂ z y → x = z
+
+@[identity]
 protected abbreviation fn_fixpoint (fn : α → α) (ct : out_param $ α) : Prop := fn ct = ct
 
 @[identity]
@@ -122,6 +137,52 @@ protected abbreviation op_left_distributive (op_1 : α → β → α) (op_2 : ou
 protected abbreviation op_right_distributive (op_1 : α → β → β) (op_2 : out_param $ β → β → β) : Prop := ∀ x y z, op_1 x (op_2 y z) = op_2 (op_1 x y) (op_1 x z)
 
 end algebra.identity
+
+namespace algebra.class
+set_option default_priority 0
+
+instance op_left_compatible_of_op_compatibility (op : α → β → β) (op' : α → α → α) [op_compatibility op op' op op] : op_left_compatible op op' :=
+op_left_compatible.of_pattern _ _
+
+instance op_right_compatible_of_op_compatibility (op : α → β → α) (op' : β → β → β) [op_compatibility op op op op'] : op_right_compatible op op' :=
+op_right_compatible.of_pattern _ _
+
+instance op_associative_of_op_left_compatible (op : α → α → α) [op_left_compatible op op] : op_associative op :=
+op_associative.of_pattern _
+
+instance op_associative_of_op_right_compatible (op : α → α → α) [op_right_compatible op op] : op_associative op :=
+op_associative.of_pattern _
+
+instance op_symmetric_of_op_opposite (op : α → α → β) [op_opposite op op] : op_symmetric op :=
+op_symmetric.of_pattern _
+
+instance op_commutative_of_op_symmetric (op : α → α → α) [op_symmetric op] : op_commutative op :=
+op_commutative.of_pattern _
+
+instance fn_fixpoint_of_fn_ct_homomorphism (fn : α → α) (ct : α) [fn_ct_homomorphism fn ct ct] : fn_fixpoint fn ct :=
+fn_fixpoint.of_pattern _ _
+
+instance fn_fn_commutative_of_fn_fn_homomorphism (fn_1 : α → α) (fn_2 : α → α) [fn_fn_homomorphism fn_1 fn_2 fn_2] : fn_fn_commutative fn_1 fn_2 :=
+fn_fn_commutative.of_pattern _ _
+
+instance fn_involutive_of_fn_fn_inverse (fn : α → α) [fn_fn_inverse fn fn] : fn_involutive fn :=
+fn_involutive.of_pattern _
+
+instance op_left_fixpoint_of_op_left_ct_homomorphism_of_op_left_fixpoint (op : α → β → α) (ct : α) [op_left_ct_homomorphism op ct ct] : op_left_fixpoint op ct :=
+op_left_fixpoint.of_pattern _ _
+
+instance op_right_fixpoint_of_op_right_ct_homomorphism_of_op_right_fixpoint (op : α → β → β) (ct : β) [op_right_ct_homomorphism op ct ct] : op_right_fixpoint op ct :=
+op_right_fixpoint.of_pattern _ _
+
+instance op_left_distributive_of_op_left_op_homomorphism (op_1 : α → β → α) (op_2 : α → α → α) [op_left_op_homomorphism op_1 op_2 op_2] : op_left_distributive op_1 op_2 :=
+op_left_distributive.of_pattern _ _
+
+instance op_right_distributive_of_op_right_op_homomorphism (op_1 : α → β → β) (op_2 : β → β → β) [op_right_op_homomorphism op_1 op_2 op_2] : op_right_distributive op_1 op_2 :=
+op_right_distributive.of_pattern _ _
+
+end algebra.class
+
+#exit
 
 namespace algebra.class
 set_option default_priority 0

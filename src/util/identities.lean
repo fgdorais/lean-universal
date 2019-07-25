@@ -33,7 +33,7 @@ let eqns : list expr := info.eqns.map $ λ ⟨lvl, typ, lhs, rhs⟩,
   let lhs := vars.app_beta (lhs.lift_vars 0 vars.length) in
   let rhs := vars.app_beta (rhs.lift_vars 0 vars.length) in
   expr.mk_app (expr.const `eq [lvl]) [typ, lhs, rhs] in
-let eqn : expr := eqns.tail.foldr (λ e q,  
+let eqn : expr := eqns.tail.foldl (λ q e,  
   expr.pi `h binder_info.default e (q.lift_vars 0 1)
 ) eqns.head in
 vars.pi eqn
@@ -98,15 +98,12 @@ meta def mk_decl (info : identity_info) : declaration :=
 let itype : expr := info.params.pi (expr.sort level.zero) in
 let vars : expr_ctx := info.vars.enum.map (λ ⟨k, _, n, t⟩, (n, t.lift_vars 0 (info.vars.length - k - 1), binder_info.default)) in
 let eqns : list expr := info.eqns.map (λ ⟨lvl, typ, lhs, rhs⟩,
-let typ := typ.lift_vars 0 vars.length in
-let lhs := vars.app (lhs.lift_vars 0 vars.length) in
-let rhs := vars.app (rhs.lift_vars 0 vars.length) in
-expr.mk_app (expr.const `eq [lvl]) [typ, lhs, rhs]) in
-let eqn : expr := eqns.tail.foldr (λ e q,  
-expr.pi `h binder_info.default e (q.lift_vars 0 1)
-) eqns.head in
-let eqn : expr := vars.pi eqn in
-let ivalue : expr := info.params.lam eqn in
+  let typ := typ.lift_vars 0 vars.length in
+  let lhs := vars.app (lhs.lift_vars 0 vars.length) in
+  let rhs := vars.app (rhs.lift_vars 0 vars.length) in
+  expr.mk_app (expr.const `eq [lvl]) [typ, lhs, rhs]
+) in
+let ivalue : expr := info.params.lam info.eqn in
 declaration.defn info.to_name info.univ_params itype ivalue reducibility_hints.abbrev tt
 
 meta def mk_class : identity_info → inductive_declaration × declaration :=
@@ -168,7 +165,7 @@ let eql : list expr := (list.range (hyps+1)).map (λ i, var.app (expr.var (vars 
 let eqr : list expr := (list.range (hyps+1)).map (λ i, var.app (expr.var (vars + hyps - i))) in
 let eqs : list expr := (cls.zip $ list.zip eql eqr).enum.map (λ e : nat × level × expr × expr, 
   expr.mk_app (expr.const `eq [e.snd.fst]) [expr.var (vars+3*hyps+2-e.fst), e.snd.snd.fst, e.snd.snd.snd]) in
-let eqn : expr := var.pi (eqs.tail.foldl (λ h e, expr.pi `h binder_info.default h (e.lift_vars 0 1)) eqs.head) in
+let eqn : expr := var.pi (eqs.reverse.tail.foldl (λ e h, expr.pi `h binder_info.default h (e.lift_vars 0 1)) eqs.reverse.head) in
 let cctx := ctx.add `_ eqn in
 let pcons := cctx.pi ((ctx.app (expr.const pname (dls++cls))).lift_vars 0 1) in
 let pdecl : inductive_declaration :=
@@ -298,7 +295,7 @@ meta def algebra.identity_decl_attr : user_attribute :=
     add_decl eldecl >> set_basic_attribute `reducible eldecl.to_name tt,
     (resolve_constant (identity.mk_pattern_name info.num_vars info.num_hyps) >> tactic.skip)
       <|> tactic.add_pattern_decl info.num_vars info.num_hyps,
-    let (todecl, ofdecl) := identity.mk_pattern_inst info,
+    (todecl, ofdecl) ← pure $ identity.mk_pattern_inst info,
     add_decl todecl >> tactic.set_basic_attribute `instance todecl.to_name tt,
     add_decl ofdecl,
     skip
@@ -337,3 +334,75 @@ meta def algebra.theory_attr : user_attribute :=
 } 
 
 end attributes
+
+#exit
+
+section test
+open tactic
+variables {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
+variables (fn : γ → δ) (op₁ : α → β → γ) (op₂ : α → β → δ) (op₃ : α → β → γ)
+
+abbreviation oorc : Prop := ∀ (x y z), fn (op₁ x y) = fn (op₁ z y) → op₂ x y = op₂ z y → op₃ x y = op₃ z y
+
+run_cmd do {
+  decl ← get_decl `oorc,
+  info ← identity.get_info decl,
+  pp info.to_name >>= λ s, trace (to_string s),
+  pp info.cl_name >>= λ s, trace (to_string s),
+  pp info.el_name >>= λ s, trace (to_string s),
+  pp info.univ_params >>= λ s, trace (to_string s),
+  trace "params:",
+  info.params.mmap $ λ ⟨n, e, b⟩, pp (n,e) >>= λ s, trace (to_string s),
+  trace "vars:",
+  info.vars.mmap $ λ ⟨u, n, e⟩, pp (u,n,e) >>= λ s, trace (to_string s),
+  trace "eqns:",
+  info.eqns.mmap $ λ ⟨u, t, l, r⟩, pp (u,t,l,r) >>= λ s, trace (to_string s),
+  (cldecl, eldecl) ← pure $ identity.mk_class info,
+  add_ind cldecl >> set_basic_attribute `class cldecl.to_name tt,
+  add_decl eldecl >> set_basic_attribute `reducible eldecl.to_name tt,
+  trace "",
+  pp eldecl.type >>= λ s, trace s,
+  pp eldecl.value >>= λ s, trace s,
+  (resolve_constant (identity.mk_pattern_name info.num_vars info.num_hyps) >> tactic.skip)
+    <|> tactic.add_pattern_decl info.num_vars info.num_hyps,
+  (todecl, ofdecl) ← pure $ identity.mk_pattern_inst info,
+  trace "to_pattern:",
+  pp todecl.type >>= λ s, trace s,
+  pp todecl.value >>= λ s, trace s,
+--  add_decl todecl,
+  trace "of_pattern:",
+  pp ofdecl.type >>= λ s, trace s,
+  pp ofdecl.value >>= λ s, trace s,
+--  add_decl ofdecl,
+
+/-
+(to_name : name)
+(cl_name : option name)
+(el_name : option name)
+(univ_params : list name)
+(params : expr_ctx)
+(vars : list (level × name × expr))
+(eqns : list (level × expr × expr × expr))
+(is_trusted : bool)
+-/
+  skip
+}
+
+def oorc.to_pattern [oorc.class fn op₁ op₂ op₃] : 
+algebra.identity_3_2
+  (λ x y z, fn (op₁ x y))
+  (λ x y z, op₂ x y)
+  (λ x y z, op₃ x y)
+  (λ x y z, fn (op₁ z y))
+  (λ x y z, op₂ z y)
+  (λ x y z, op₃ z y)
+:= algebra.identity_3_2.intro 
+  (λ x y z, fn (op₁ x y))
+  (λ x y z, op₂ x y)
+  (λ x y z, op₃ x y)
+  (λ x y z, fn (op₁ z y))
+  (λ x y z, op₂ z y)
+  (λ x y z, op₃ z y)
+  (λ x y z h₁ h₂, oorc.elim fn op₁ op₂ op₃ h₁ h₂ )
+
+end test
