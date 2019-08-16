@@ -9,6 +9,8 @@ meta def binder_info.to_fmt : binder_info → format → format
 | binder_info.strict_implicit := format.dcbrace
 | binder_info.aux_decl := format.paren
 
+meta def format.quote : format → format := format.bracket "\"" "\""
+
 /-- insert spaces between list items -/
 meta def format.interspace : list format → format :=
 λ l, format.join $ l.intersperse format.space

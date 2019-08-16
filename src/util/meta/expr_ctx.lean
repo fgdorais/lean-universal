@@ -64,6 +64,14 @@ meta def delete : expr_ctx → nat → exceptional expr_ctx
   λ ctx, success $ ctx.add n (t.lower_vars k 1) b
 | ctx 0 := ctx.del
 
+meta def collect_univ_params (ctx : expr_ctx) : list name :=
+ctx.foldl (λ us ⟨_,e,_⟩, e.collect_univ_params.foldr list.insert us) []
+
+meta def implicitize : expr_ctx → expr_ctx
+| [] := []
+| ((n,t,binder_info.default)::ctx) := (n,t,binder_info.implicit) :: implicitize ctx
+| (c::ctx) := c :: implicitize ctx
+
 meta def lam : expr_ctx → expr → expr
 | [] e := e
 | ((n,t,_)::ctx) e := lam ctx (expr.lam n binder_info.default t e)
