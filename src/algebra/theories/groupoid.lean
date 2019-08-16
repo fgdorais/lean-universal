@@ -1,3 +1,6 @@
+-- Copyright © 2019 François G. Dorais. All rights reserved.
+-- Released under Apache 2.0 license as described in the file LICENSE.
+
 import .basic
 import .category
 import .group
@@ -16,6 +19,7 @@ structure groupoid_sig {α : Type*} (β : α → α → Type*) :=
 namespace groupoid_sig
 variables {α : Type*} {β : α → α → Type*} (s : groupoid_sig β)
 
+/- fix signature_instance to handle operation parameters -/
 definition to_category : category_sig β :=
 { op := s.op
 , id := s.id
@@ -31,25 +35,11 @@ definition to_category : category_sig β :=
 , constraints := [t =?= s.to_category]
 }
 
+@[signature_instance]
 definition to_group (a : α) : group_sig (β a a) :=
 { op := s.op a a a
 , inv := s.inv a a
 , id := s.id a
-}
-
-@[unify] definition to_group_op_hint (a : α) (t : group_sig (β a a)) : unification_hint :=
-{ pattern := t.op =?= s.op a a a
-, constraints := [t =?= s.to_group a]
-}
-
-@[unify] definition to_group_inv_hint (a : α) (t : group_sig (β a a)) : unification_hint :=
-{ pattern := t.inv =?= s.inv a a
-, constraints := [t =?= s.to_group a]
-}
-
-@[unify] definition to_group_id_hint (a : α) (t : group_sig (β a a)) : unification_hint :=
-{ pattern := t.id =?= s.id a
-, constraints := [t =?= s.to_group a]
 }
 
 end groupoid_sig
@@ -72,9 +62,9 @@ definition infer
 [Π (a b), class.op_right_inverse (s.op a b a) (s.inv a b) (s.id a)]
 : groupoid s :=
 groupoid.intro 
-  (λ _ _ _ _, op_compatibility _ _ _ _) 
-  (λ _ _, op_right_identity _ _) 
-  (λ _ _, op_right_inverse _ _ _)
+(λ _ _ _ _, op_compatibility _ _ _ _) 
+(λ _ _, op_right_identity _ _) 
+(λ _ _, op_right_inverse _ _ _)
 
 include i
 local infix ∙ := s.op _ _ _
@@ -131,12 +121,6 @@ from calc y
 = e ∙ z : by rw op_left_inverse (s.op _ _ _) ...
 = z : by rw op_left_identity (s.op _ _ _)
 
-/- group.infer can't infer op_associative from op_compatibility -/
-@[identity_instance]
-theorem to_group_assoc (a : α) : identity.op_associative (s.to_group a).op :=
-show identity.op_compatibility (s.op a a a) (s.op a a a) (s.op a a a) (s.op a a a),
-from op_compatibility _ _ _ _
-
 instance to_category : category s.to_category := category.infer _
 
 instance to_group (a : α) : group (s.to_group a) := group.infer _
@@ -151,25 +135,11 @@ namespace algebra
 namespace group_sig
 variables {α : Type*} (s : group_sig α)
 
+@[signature_instance]
 definition to_groupoid : groupoid_sig (λ (_ _ : unit), α) :=
 { op := λ _ _ _, s.op
 , inv := λ _ _, s.inv
 , id := λ _, s.id
-}
-
-@[unify] definition to_groupoid_op_hint (t : groupoid_sig (λ (_ _ : unit), α)) (a b c : unit) : unification_hint :=
-{ pattern := t.op a b c =?= s.op
-, constraints := [t =?= s.to_groupoid]
-}
-
-@[unify] definition to_groupoid_inv_hint (t : groupoid_sig (λ (_ _ : unit), α)) (a b : unit) : unification_hint :=
-{ pattern := t.inv a b =?= s.inv
-, constraints := [t =?= s.to_groupoid]
-}
-
-@[unify] definition to_groupoid_id_hint (t : groupoid_sig (λ (_ _ : unit), α)) (a : unit) : unification_hint :=
-{ pattern := t.id a =?= s.id
-, constraints := [t =?= s.to_groupoid]
 }
 
 end group_sig

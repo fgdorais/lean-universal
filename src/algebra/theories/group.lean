@@ -1,3 +1,6 @@
+-- Copyright © 2019 François G. Dorais. All rights reserved.
+-- Released under Apache 2.0 license as described in the file LICENSE.
+
 import .basic
 import .monoid
 import .loop
@@ -18,46 +21,18 @@ abbreviation ldiv (x y : α) := s.op (s.inv x) y -- (λ x y, x⁻¹ ∙ y)
 
 abbreviation rdiv (x y : α) := s.op x (s.inv y) -- (λ x y, x ∙ y⁻¹)
 
+@[signature_instance]
 definition to_monoid : monoid_sig α :=
 { op := s.op
 , id := s.id
 }
 
-@[unify] definition to_monoid_op_hint (t : monoid_sig α) : unification_hint :=
-{ pattern := t.op =?= s.op
-, constraints := [t =?= s.to_monoid]
-}
-
-@[unify] definition to_monoid_id_hint (t : monoid_sig α) : unification_hint :=
-{ pattern := t.id =?= s.id
-, constraints := [t =?= s.to_monoid]
-}
-
+@[signature_instance]
 definition to_loop : loop_sig α :=
 { op := s.op
 , ldiv := s.ldiv
 , rdiv := s.rdiv
 , id := s.id
-}
-
-@[unify] definition to_loop_op_hint (t : loop_sig α) : unification_hint :=
-{ pattern := t.op =?= s.op
-, constraints := [t =?= s.to_loop]
-}
-
-@[unify] definition to_loop_ldiv_hint (t : loop_sig α) : unification_hint :=
-{ pattern := t.ldiv =?= s.ldiv
-, constraints := [t =?= s.to_loop]
-}
-
-@[unify] definition to_loop_rdiv_hint (t : loop_sig α) : unification_hint :=
-{ pattern := t.rdiv =?= s.rdiv
-, constraints := [t =?= s.to_loop]
-}
-
-@[unify] definition to_loop_id_hint (t : loop_sig α) : unification_hint :=
-{ pattern := t.id =?= s.id
-, constraints := [t =?= s.to_loop]
 }
 
 end group_sig

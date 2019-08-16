@@ -1,11 +1,15 @@
+-- Copyright © 2019 François G. Dorais. All rights reserved.
+-- Released under Apache 2.0 license as described in the file LICENSE.
+
 import .basic
 import .monoid
 import .group
+import .action
 
 namespace algebra
 
 /- 
-signature command cannot handle operation parameters yet, 
+signature command cannot handle operation parameters, 
 so we define category_sig manually; category_hom is missing.
 -/
 structure category_sig {α : Type*} (β : α → α → Type*) :=
@@ -15,20 +19,20 @@ structure category_sig {α : Type*} (β : α → α → Type*) :=
 namespace category_sig
 variables {α : Type*} {β : α → α → Type*} (s : category_sig β)
 
-@[reducible]
+@[signature_instance]
 definition to_monoid (a : α) : monoid_sig (β a a) :=
 { op := s.op a a a
 , id := s.id a
 }
 
-@[unify] definition to_monoid_op_hint (a : α) (t : monoid_sig (β a a)) : unification_hint :=
-{ pattern := t.op =?= s.op a a a
-, constraints := [t =?= s.to_monoid a]
+@[signature_instance]
+definition to_left_action (a b : α) : left_action_sig (β a a) (β a b) :=
+{ act := s.op a a b
 }
 
-@[unify] definition to_monoid_id_hint (a : α) (t : monoid_sig (β a a)) : unification_hint :=
-{ pattern := t.id =?= s.id a
-, constraints := [t =?= s.to_monoid a]
+@[signature_instance]
+definition to_right_action (a b : α) : right_action_sig (β a a) (β b a) :=
+{ act := s.op b a a
 }
 
 end category_sig
@@ -51,18 +55,17 @@ definition infer
 [Π (a b), class.op_left_identity (s.op a a b) (s.id a)]
 [Π (a b), class.op_right_identity (s.op a b b) (s.id b)] : category s :=
 category.intro
-  (λ _ _ _ _, op_compatibility _ _ _ _)
-  (λ _ _, op_left_identity _ _)
-  (λ _ _, op_right_identity _ _)
+(λ _ _ _ _, op_compatibility _ _ _ _)
+(λ _ _, op_left_identity _ _)
+(λ _ _, op_right_identity _ _)
 
 include i
 
-/- monoid.infer can't infer op_associative from op_compatibility -/
-@[identity_instance]
-theorem to_monoid_assoc (a : α) : identity.op_associative (s.to_monoid a).op :=
-op_compatibility _ _ _ _
-
 instance to_monoid (a : α) : monoid (s.to_monoid a) := monoid.infer _
+
+instance to_left_monoid_action (a b : α) : left_monoid_action (s.to_monoid a) (s.to_left_action a b) := left_monoid_action.infer _ _
+
+instance to_right_monoid_action (a b : α) : right_monoid_action (s.to_monoid a) (s.to_right_action a b) := right_monoid_action.infer _ _
 
 end category
 
@@ -74,19 +77,10 @@ namespace algebra
 namespace monoid_sig
 variables {α : Type*} (s : monoid_sig α)
 
+@[signature_instance]
 definition to_category : category_sig (λ (_ _ : unit), α) :=
 { op := λ _ _ _, s.op
 , id := λ _, s.id
-}
-
-@[unify] definition to_category_op_hint (t : category_sig (λ (_ _ : unit), α)) (a b c : unit) : unification_hint :=
-{ pattern := t.op a b c =?= s.op
-, constraints := [t =?= s.to_category]
-}
-
-@[unify] definition to_category_id_hint (t : category_sig (λ (_ _ : unit), α)) (a : unit) : unification_hint :=
-{ pattern := t.id a =?= s.id
-, constraints := [t =?= s.to_category]
 }
 
 end monoid_sig

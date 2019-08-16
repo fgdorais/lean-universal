@@ -1,3 +1,6 @@
+-- Copyright © 2019 François G. Dorais. All rights reserved.
+-- Released under Apache 2.0 license as described in the file LICENSE.
+
 import .basic
 import .group 
 import .monoid
@@ -17,67 +20,31 @@ signature ring (α : Type*) :=
 namespace ring_sig
 variables {α : Type*} (s : ring_sig α)
 
+@[signature_instance]
 def to_add_group : group_sig α :=
 { op := s.add
 , inv := s.neg
 , id := s.zero
 }
 
-@[unify] definition to_add_group_op_hint (t : group_sig α) : unification_hint :=
-{ pattern := t.op =?= s.add
-, constraints := [t =?= s.to_add_group]
-}
-
-@[unify] definition to_add_group_inv_hint (t : group_sig α) : unification_hint :=
-{ pattern := t.inv =?= s.neg
-, constraints := [t =?= s.to_add_group]
-}
-
-@[unify] definition to_add_group_id_hint (t : group_sig α) : unification_hint :=
-{ pattern := t.id =?= s.zero
-, constraints := [t =?= s.to_add_group]
-}
-
+@[signature_instance]
 def to_mul_monoid : monoid_sig α :=
 { op := s.mul
 , id := s.one
 }
 
-@[unify] definition to_mul_monoid_op_hint (t : monoid_sig α) : unification_hint :=
+@[unify] 
+definition to_mul_monoid_to_semigroup_op_hint (t : semigroup_sig α) : unification_hint :=
 { pattern := t.op =?= s.mul
-, constraints := [t =?= s.to_mul_monoid]
+, constraints := [t =?= s.to_mul_monoid.to_semigroup]
 }
 
-@[unify] definition to_mul_monoid_id_hint (t : monoid_sig α) : unification_hint :=
-{ pattern := t.id =?= s.one
-, constraints := [t =?= s.to_mul_monoid]
-}
-
+@[signature_instance]
 definition to_semiring : semiring_sig α :=
 { add := s.add
 , zero := s.zero
 , mul := s.mul
 , one := s.one
-}
-
-@[unify] definition to_semiring_add_hint (t : semiring_sig α) : unification_hint :=
-{ pattern := t.add =?= s.add
-, constraints := [t =?= s.to_semiring]
-}
-
-@[unify] definition to_semiring_zero_hint (t : semiring_sig α) : unification_hint :=
-{ pattern := t.zero =?= s.zero
-, constraints := [t =?= s.to_semiring]
-}
-
-@[unify] definition to_semiring_mul_hint (t : semiring_sig α) : unification_hint :=
-{ pattern := t.mul =?= s.mul
-, constraints := [t =?= s.to_semiring]
-}
-
-@[unify] definition to_semiring_one_hint (t : semiring_sig α) : unification_hint :=
-{ pattern := t.one =?= s.one
-, constraints := [t =?= s.to_semiring]
 }
 
 end ring_sig
@@ -104,7 +71,7 @@ namespace ring
 variable [i : ring s]
 include i
 
-instance add_group : group s.to_add_group := group.infer _
+instance to_add_group : group s.to_add_group := group.infer _
 
 @[identity_instance]
 theorem add_commutative : identity.op_commutative s.add :=
@@ -130,7 +97,7 @@ from op_left_cancellative s.add this,
 show x + y = y + x,
 from op_right_cancellative s.add this
 
-instance add_comm_group : comm_group s.to_add_group := comm_group.infer _
+instance to_add_comm_group : comm_group s.to_add_group := comm_group.infer _
 
 @[identity_instance]
 theorem mul_left_null : identity.op_left_fixpoint s.mul s.zero :=
@@ -200,8 +167,6 @@ namespace comm_ring
 variables [i : comm_ring s]
 include i
 
-instance to_mul_monoid : comm_monoid s.to_mul_monoid := comm_monoid.infer _
-
 @[identity_instance]
 theorem mul_left_distributive : identity.op_left_distributive s.mul s.add :=
 λ x y z,
@@ -211,6 +176,8 @@ from calc (x + y) ∙ z
 = z ∙ x + z ∙ y : by rw op_right_distributive s.mul ...
 = x ∙ z + z ∙ y : by rw op_commutative s.mul x ...
 = x ∙ z + y ∙ z : by rw op_commutative s.mul y
+
+instance to_mul_comm_monoid : comm_monoid s.to_mul_monoid := comm_monoid.infer _
 
 instance to_ring : ring s := ring.infer _
 

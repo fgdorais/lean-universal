@@ -1,3 +1,6 @@
+-- Copyright © 2019 François G. Dorais. All rights reserved.
+-- Released under Apache 2.0 license as described in the file LICENSE.
+
 import .basic
 import .group 
 import .monoid
@@ -15,34 +18,16 @@ signature semiring (α : Type*) :=
 namespace semiring_sig
 variables {α : Type*} (s : semiring_sig α)
 
+@[signature_instance]
 def to_add_monoid : monoid_sig α :=
 { op := s.add
 , id := s.zero
 }
 
-@[unify] definition to_add_monoid_op_hint (t : monoid_sig α) : unification_hint :=
-{ pattern := t.op =?= s.add
-, constraints := [t =?= s.to_add_monoid]
-}
-
-@[unify] definition to_add_monoid_id_hint (t : monoid_sig α) : unification_hint :=
-{ pattern := t.id =?= s.zero
-, constraints := [t =?= s.to_add_monoid]
-}
-
+@[signature_instance]
 def to_mul_monoid : monoid_sig α :=
 { op := s.mul
 , id := s.one
-}
-
-@[unify] definition to_mul_monoid_op_hint (t : monoid_sig α) : unification_hint :=
-{ pattern := t.op =?= s.mul
-, constraints := [t =?= s.to_mul_monoid]
-}
-
-@[unify] definition to_mul_monoid_id_hint (t : monoid_sig α) : unification_hint :=
-{ pattern := t.id =?= s.one
-, constraints := [t =?= s.to_mul_monoid]
 }
 
 end semiring_sig
@@ -70,9 +55,9 @@ namespace semiring
 variable [i : semiring s]
 include i
 
-instance add_comm_monoid : comm_monoid s.to_add_monoid := comm_monoid.infer _
+instance to_add_comm_monoid : comm_monoid s.to_add_monoid := comm_monoid.infer _
 
-instance mul_monoid : monoid s.to_mul_monoid := monoid.infer _
+instance to_mul_monoid : monoid s.to_mul_monoid := monoid.infer _
 
 end semiring
 
