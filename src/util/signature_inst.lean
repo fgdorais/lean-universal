@@ -16,8 +16,6 @@ do {
   env.structure_fields nm
 }
 
-#print unification_hint.mk
-
 meta def add_structure_field_hints (d : declaration) : tactic unit :=
 do {
   (ctx, typ) ← mk_local_pis d.type,

@@ -135,7 +135,7 @@ meta def expr_to_fmt (ctx : expr_ctx) : expr → format
 | (expr.var i) := 
   match ctx.nth i with 
   | success ⟨n,_⟩ := to_fmt n
-  | exception _ _ := "#" ++ to_fmt (i - ctx.length)
+  | exception _ := "#" ++ to_fmt (i - ctx.length)
   end
 | (expr.sort l) := "Sort " ++ format.paren (to_fmt l)
 | (expr.app a b) := expr_to_fmt a ++ " " ++ format.paren (expr_to_fmt b)

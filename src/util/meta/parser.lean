@@ -4,7 +4,7 @@
 
 meta def lean.parser.of_exceptional {α} : exceptional α → lean.parser α
 | (exceptional.success x) := pure x
-| (exceptional.exception _ m) := failure
+| (exceptional.exception m) := failure
 
 meta instance (α) : has_coe_to_sort (exceptional α) := ⟨_, lean.parser.of_exceptional⟩
 

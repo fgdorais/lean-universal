@@ -19,10 +19,10 @@ def add_left_comm [has_add α] [class.op_left_commutative (has_add.add:α→α�
 def add_right_comm [has_add α] [class.op_right_commutative (has_add.add:α→α→α)] : 
 ∀ (x y z : α), (x + y) + z = (x + z) + y := op_right_commutative _
 
-def zero_add [has_add α] [has_zero α] [class.op_left_identity (has_add.add:α→α→α) (has_zero.zero α)] :
+def zero_add [has_add α] [has_zero α] [class.op_left_identity (has_add.add:α→α→α) (has_zero.zero:α)] :
 ∀ (x : α), 0 + x = x := op_left_identity _ _
 
-def add_zero [has_add α] [has_zero α] [class.op_right_identity (has_add.add:α→α→α) (has_zero.zero α)] :
+def add_zero [has_add α] [has_zero α] [class.op_right_identity (has_add.add:α→α→α) (has_zero.zero:α)] :
 ∀ (x : α), x + 0 = x := op_right_identity _ _
 
 def neg_add [has_add α] [has_neg α] [class.fn_op_homomorphism (has_neg.neg:α→α) (has_add.add:α→α→α) (has_add.add:α→α→α)] :
@@ -31,13 +31,13 @@ def neg_add [has_add α] [has_neg α] [class.fn_op_homomorphism (has_neg.neg:α�
 def neg_add_rev [has_add α] [has_neg α] [class.fn_op_antimorphism (has_neg.neg:α→α) (has_add.add:α→α→α) (has_add.add:α→α→α)] :
 ∀ (x y : α), -(x + y) = -y + -x := fn_op_antimorphism _ _ _
 
-def neg_add_self [has_add α] [has_neg α] [has_zero α] [class.op_left_inverse (has_add.add:α→α→α) (has_neg.neg:α→α) (has_zero.zero α)] :
+def neg_add_self [has_add α] [has_neg α] [has_zero α] [class.op_left_inverse (has_add.add:α→α→α) (has_neg.neg:α→α) (has_zero.zero:α)] :
 ∀ (x : α), -x + x = 0 := op_left_inverse _ _ _
 
-def add_neg_self [has_add α] [has_neg α] [has_zero α] [class.op_right_inverse (has_add.add:α→α→α) (has_neg.neg:α→α) (has_zero.zero α)] :
+def add_neg_self [has_add α] [has_neg α] [has_zero α] [class.op_right_inverse (has_add.add:α→α→α) (has_neg.neg:α→α) (has_zero.zero:α)] :
 ∀ (x : α), x + -x = 0 := op_right_inverse _ _ _
 
-def neg_zero [has_neg α] [has_zero α] [class.fn_fixpoint (has_neg.neg:α→α) (has_zero.zero α)] :
+def neg_zero [has_neg α] [has_zero α] [class.fn_fixpoint (has_neg.neg:α→α) (has_zero.zero:α)] :
 -(0:α) = 0 := fn_fixpoint _ _
 
 def neg_neg [has_neg α] [class.fn_involutive (has_neg.neg:α→α)] :
@@ -55,16 +55,16 @@ def mul_left_comm [has_mul α] [class.op_left_commutative (has_mul.mul:α→α�
 def mul_right_comm [has_mul α] [class.op_right_commutative (has_mul.mul:α→α→α)] : 
 ∀ (x y z : α), (x * y) * z = (x * z) * y := op_right_commutative _
 
-def one_mul [has_mul α] [has_one α] [class.op_left_identity (has_mul.mul:α→α→α) (has_one.one α)] :
+def one_mul [has_mul α] [has_one α] [class.op_left_identity (has_mul.mul:α→α→α) (has_one.one:α)] :
 ∀ (x : α), 1 * x = x := op_left_identity _ _
 
-def mul_one [has_mul α] [has_one α] [class.op_right_identity (has_mul.mul:α→α→α) (has_one.one α)] :
+def mul_one [has_mul α] [has_one α] [class.op_right_identity (has_mul.mul:α→α→α) (has_one.one:α)] :
 ∀ (x : α), x * 1 = x := op_right_identity _ _
 
-def zero_mul [has_mul α] [has_zero α] [class.op_left_fixpoint (has_mul.mul:α→α→α) (has_zero.zero α)] :
+def zero_mul [has_mul α] [has_zero α] [class.op_left_fixpoint (has_mul.mul:α→α→α) (has_zero.zero:α)] :
 ∀ (x : α), 0 * x = 0 := op_left_fixpoint _ _ 
 
-def mul_zero [has_mul α] [has_zero α] [class.op_right_fixpoint (has_mul.mul:α→α→α) (has_zero.zero α)] :
+def mul_zero [has_mul α] [has_zero α] [class.op_right_fixpoint (has_mul.mul:α→α→α) (has_zero.zero:α)] :
 ∀ (x : α), x * 0 = 0 := op_right_fixpoint _ _ 
 
 def inv_mul [has_mul α] [has_inv α] [class.fn_op_homomorphism (has_inv.inv:α→α) (has_mul.mul:α→α→α) (has_mul.mul:α→α→α)] :
@@ -73,13 +73,13 @@ def inv_mul [has_mul α] [has_inv α] [class.fn_op_homomorphism (has_inv.inv:α�
 def inv_mul_rev [has_mul α] [has_inv α] [class.fn_op_antimorphism (has_inv.inv:α→α) (has_mul.mul:α→α→α) (has_mul.mul:α→α→α)] :
 ∀ (x y : α), (x * y)⁻¹ = y⁻¹ * x⁻¹ := fn_op_antimorphism _ _ _
 
-def inv_mul_self [has_mul α] [has_inv α] [has_one α] [class.op_left_inverse (has_mul.mul:α→α→α) (has_inv.inv:α→α) (has_one.one α)] :
+def inv_mul_self [has_mul α] [has_inv α] [has_one α] [class.op_left_inverse (has_mul.mul:α→α→α) (has_inv.inv:α→α) (has_one.one:α)] :
 ∀ (x : α), x⁻¹ * x = 1 := op_left_inverse _ _ _
 
-def mul_inv_self [has_mul α] [has_inv α] [has_one α] [class.op_right_inverse (has_mul.mul:α→α→α) (has_inv.inv:α→α) (has_one.one α)] :
+def mul_inv_self [has_mul α] [has_inv α] [has_one α] [class.op_right_inverse (has_mul.mul:α→α→α) (has_inv.inv:α→α) (has_one.one:α)] :
 ∀ (x : α), x * x⁻¹ = 1 := op_right_inverse _ _ _
 
-def inv_one [has_inv α] [has_one α] [class.fn_fixpoint (has_inv.inv:α→α) (has_one.one α)] :
+def inv_one [has_inv α] [has_one α] [class.fn_fixpoint (has_inv.inv:α→α) (has_one.one:α)] :
 (1:α)⁻¹ = 1 := fn_fixpoint _ _
 
 def inv_inv [has_inv α] [class.fn_involutive (has_inv.inv:α→α)] :
@@ -109,22 +109,22 @@ def lmul_left_comm [has_lmul α β] [class.op_left_commutative (has_lmul.lmul:α
 def lmul_right_comm [has_lmul α α] [class.op_right_commutative (has_lmul.lmul:α→α→α)] : 
 ∀ (x y z : α), (x ∙ y) ∙ z = (x ∙ z) ∙ y := op_right_commutative _
 
-def one_lmul [has_lmul α β] [has_one α] [class.op_left_identity (has_lmul.lmul:α→β→β) (has_one.one α)] :
+def one_lmul [has_lmul α β] [has_one α] [class.op_left_identity (has_lmul.lmul:α→β→β) (has_one.one:α)] :
 ∀ (x : β), (1:α) ∙ x = x := op_left_identity _ _
 
-def lmul_one [has_lmul α α] [has_one α] [class.op_right_identity (has_lmul.lmul:α→α→α) (has_one.one α)] :
+def lmul_one [has_lmul α α] [has_one α] [class.op_right_identity (has_lmul.lmul:α→α→α) (has_one.one:α)] :
 ∀ (x : α), x ∙ 1 = x := op_right_identity _ _
 
-def zero_lmul [has_lmul α α] [has_zero α] [class.op_left_fixpoint (has_lmul.lmul:α→α→α) (has_zero.zero α)] :
+def zero_lmul [has_lmul α α] [has_zero α] [class.op_left_fixpoint (has_lmul.lmul:α→α→α) (has_zero.zero:α)] :
 ∀ (x : α), (0:α) ∙ x = 0 := op_left_fixpoint _ _ 
 
-def lmul_zero [has_lmul α β] [has_zero β] [class.op_right_fixpoint (has_lmul.lmul:α→β→β) (has_zero.zero β)] :
+def lmul_zero [has_lmul α β] [has_zero β] [class.op_right_fixpoint (has_lmul.lmul:α→β→β) (has_zero.zero:β)] :
 ∀ (x : α), x ∙ (0:β) = 0 := op_right_fixpoint _ _ 
 
-def inv_lmul_self [has_lmul α α] [has_inv α] [has_one α] [class.op_left_inverse (has_lmul.lmul:α→α→α) (has_inv.inv:α→α) (has_one.one α)] :
+def inv_lmul_self [has_lmul α α] [has_inv α] [has_one α] [class.op_left_inverse (has_lmul.lmul:α→α→α) (has_inv.inv:α→α) (has_one.one:α)] :
 ∀ (x : α), x⁻¹ ∙ x = 1 := op_left_inverse _ _ _
 
-def lmul_inv_self [has_lmul α α] [has_inv α] [has_one α] [class.op_right_inverse (has_lmul.lmul:α→α→α) (has_inv.inv:α→α) (has_one.one α)] :
+def lmul_inv_self [has_lmul α α] [has_inv α] [has_one α] [class.op_right_inverse (has_lmul.lmul:α→α→α) (has_inv.inv:α→α) (has_one.one:α)] :
 ∀ (x : α), x ∙ x⁻¹ = 1 := op_right_inverse _ _ _
 
 def inv_lmul [has_lmul α α] [has_inv α] [class.fn_op_homomorphism (has_inv.inv:α→α) (has_lmul.lmul:α→α→α) (has_lmul.lmul:α→α→α)] :

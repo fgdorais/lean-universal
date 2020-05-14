@@ -62,8 +62,8 @@ meta def parse_ctx_aux : nat → expr → expr_ctx → exceptional expr_ctx
 | (k+1) (expr.pi n b t e) ctx :=
   parse_ctx_aux k e (ctx.add n t b)
 | 0 (expr.sort _) ctx := success ctx
-| (k+1) _ _ := exception _ (λ _, format.to_string "parameter error")
-| 0 _ _ := exception _ (λ _, format.to_string "type error")
+| (k+1) _ _ := exception (λ _, format.to_string "parameter error")
+| 0 _ _ := exception (λ _, format.to_string "type error")
 
 /-- parameters, indices -/
 meta def parse_ctx : exceptional expr_ctx :=

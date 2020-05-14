@@ -36,18 +36,18 @@ definition comp (h₂₃ : homomorphism alg₂ alg₃) (h₁₂ : homomorphism a
 }
 
 class injective (h : homomorphism alg₁ alg₂) : Prop := intro ::
-(elim (t) : function.injective (h.map t))
+(elim [] (t) : function.injective (homomorphism.map h t))
 
 class surjective (h : homomorphism alg₁ alg₂) : Prop := intro ::
-(elim (t) : function.surjective (h.map t))
+(elim [] (t) : function.surjective (h.map t))
 
 instance comp.inj (h₂₃ : homomorphism alg₂ alg₃) (h₁₂ : homomorphism alg₁ alg₂)
 [injective h₂₃] [injective h₁₂] : injective (comp h₂₃ h₁₂) :=
-⟨λ t, function.injective_comp (injective.elim h₂₃ t) (injective.elim h₁₂ t)⟩
+⟨λ t, function.injective.comp (injective.elim h₂₃ t) (injective.elim h₁₂ t)⟩
 
 instance comp.surj (h₂₃ : homomorphism alg₂ alg₃) (h₁₂ : homomorphism alg₁ alg₂)
 [surjective h₂₃] [surjective h₁₂] : surjective (comp h₂₃ h₁₂) :=
-⟨λ t, function.surjective_comp (surjective.elim h₂₃ t) (surjective.elim h₁₂ t)⟩
+⟨λ t, function.surjective.comp (surjective.elim h₂₃ t) (surjective.elim h₁₂ t)⟩
 
 @[priority 0]
 instance id.inj (alg : algebra sig) : injective (id alg) := ⟨λ _, function.injective_id⟩

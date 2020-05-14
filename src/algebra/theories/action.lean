@@ -8,7 +8,7 @@ namespace algebra
 signature left_action (α : Type*) (β : Type*) := 
 (act : α → β → β)
 
-class left_action {α : Type*} {β : Type*} (s : left_action_sig α β) : Prop := intro ::
+class left_action {α : Type*} {β : Type*} (s : left_action_sig α β) : Prop := intro [] ::
 
 namespace left_action
 variables {α : Type*} {β : Type*} (s : left_action_sig α β)
@@ -34,7 +34,7 @@ end left_action
 signature right_action (α : Type*) (β : Type*) := 
 (act : β → α → β)
 
-class right_action {α : Type*} {β : Type*} (s : right_action_sig α β) : Prop := intro ::
+class right_action {α : Type*} {β : Type*} (s : right_action_sig α β) : Prop := intro [] ::
 
 namespace right_action
 variables {α : Type*} {β : Type*} (s : right_action_sig α β) 

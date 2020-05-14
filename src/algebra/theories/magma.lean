@@ -24,7 +24,7 @@ definition to_right_action : right_action_sig α α :=
 
 end magma_sig
 
-class magma {α} (s : magma_sig α) : Prop := intro ::
+class magma {α} (s : magma_sig α) : Prop := intro [] ::
 
 abbreviation magma.infer {α} (s : magma_sig α) : magma s := magma.intro _
 
